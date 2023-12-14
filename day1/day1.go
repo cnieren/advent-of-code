@@ -127,9 +127,9 @@ func GetLineSum(input map[int]int) int {
 	return 10*input[keys[0]] + input[keys[len(keys)-1]]
 }
 
-func ProcessFile() {
+func ProcessFile(fileName string) {
 	// open file
-	f, err := os.Open("input2.txt")
+	f, err := os.Open(fileName)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -157,5 +157,11 @@ func ProcessFile() {
 }
 
 func main() {
-	ProcessFile()
+	fileName := "sample2.txt"
+
+	if len(os.Args) >= 2 {
+		fileName = os.Args[1]
+	}
+
+	ProcessFile(fileName)
 }

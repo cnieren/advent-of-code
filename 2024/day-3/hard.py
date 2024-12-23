@@ -2,40 +2,32 @@ import os
 import re
 
 filename = 'input.txt'
-data = []
 result = 0
-
-def mult(a, b):
-    return a * b
 
 if not os.path.isfile(filename):
     print(f'File: {filename} -- Not Found')
     exit()
 
 with open(filename) as filep:
-    p = re.compile(r"mul\((\d{1,3}),(\d{1,3})\)")
-    for line in filep:
-        # Read file here
-        chunks = line.strip().split("don't()")
-        valid = []
-        for i in range(len(chunks)):
-            if i == 0:
-                valid.append(chunks[i])
-                continue
+    data = filep.read()
 
-            start = chunks[i].find("do()")
+    mul_pattern = re.compile(r"mul\((\d{1,3}),(\d{1,3})\)")
+    do_pattern = re.compile(r"do\(\)")
+    dont_pattern = re.compile(r"don't\(\)")
 
-            if start != -1:
-                valid.append(chunks[i][start + 4:])
+    sep=')'
+    chunks = [x+sep for x in data.split(")")]
 
-        valid_line = ''.join(valid)
-        print(valid_line)
-
-        iterator = p.finditer(valid_line)
-        for match in iterator:
-            data.append([int(match.group(1)), int(match.group(2))])
-
-for i in range(len(data)):
-    result += (data[i][0] * data[i][1])
+    enabled = True
+    for chunk in chunks:
+        do_found = do_pattern.search(chunk)
+        dont_found = dont_pattern.search(chunk)
+        mul_found = mul_pattern.search(chunk)
+        if do_found:
+            enabled = True
+        elif dont_found:
+            enabled = False
+        elif mul_found and enabled:
+            result += int(mul_found.group(1)) * int(mul_found.group(2))
 
 print(result)

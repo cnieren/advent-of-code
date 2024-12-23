@@ -5,24 +5,13 @@ filename = 'input.txt'
 data = []
 safeCount = 0
 
-def isSafeReport(report: list[int]):
-    asc = sorted(report)
-    desc = sorted(report, reverse=True)
+def is_safe(levels):
+    difs = [a - b for a, b in zip(levels, levels[1:])]
 
-    if report == asc:
-        for i in range(len(report) - 1):
-            delta = report[i+1] - report[i]
-            if (delta < 1 or delta > 3):
-                return False
-    elif report == desc:
-        for i in range(len(report) - 1):
-            delta = report[i] - report[i+1]
-            if (delta < 1 or delta > 3):
-                return False
-    else:
-        return False
+    is_monotonic = all(i > 0 for i in difs) or all(i < 0 for i in difs)
+    is_in_range = all(0 < abs(i) <= 3 for i in difs)
 
-    return True
+    return is_monotonic and is_in_range
 
 if not os.path.isfile(filename):
     print(f'File: {filename} -- Not Found')
@@ -30,9 +19,14 @@ if not os.path.isfile(filename):
 
 with open(filename) as filep:
     for line in filep:
-        report = [int(i) for i in line.split()]
-        # data.append([isSafeReport(report), report])
-        if isSafeReport(report):
+        levels = [*map(int, line.split())]
+        if is_safe(levels):
             safeCount += 1
+        else:
+            for i in range(len(levels)):
+                tolerated_levels = levels[:i] + levels[i+1:]
+                if is_safe(tolerated_levels):
+                    safeCount += 1 
+                    break
 
 print(safeCount)

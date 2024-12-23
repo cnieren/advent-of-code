@@ -1,13 +1,5 @@
 import os
-from collections import defaultdict
 import re
-
-def groups(data, func):
-    grouping = defaultdict(list)
-    for y in range(len(data)):
-        for x in range(len(data[y])):
-            grouping[func(x, y)].append(data[y][x])
-    return list(map(grouping.get, sorted(grouping)))
 
 filename = 'input.txt'
 board = []
@@ -21,44 +13,14 @@ with open(filename) as filep:
         # Read file here
         board.append(list(line.strip()))
 
-cols = groups(board, lambda x, y: x)
-rows = groups(board, lambda x, y: y)
-fdiag = groups(board, lambda x, y: x + y)
-bdiag = groups(board, lambda x, y: x - y)
-
-p = re.compile(r"XMAS")
 count = 0
+rows, cols = len(board), len(board[0])
+legs = {"M", "S"}
 
-for x in range(len(rows)):
-    row_str = ''.join(rows[x])
-    row_rev = row_str[::-1]
-    m = p.findall(row_str)
-    count += len(m)
-    m = p.findall(row_rev)
-    count += len(m)
-
-for x in range(len(cols)):
-    col_str = ''.join(cols[x])
-    col_rev = col_str[::-1]
-    m = p.findall(col_str)
-    count += len(m)
-    m = p.findall(col_rev)
-    count += len(m)
-
-for x in range(len(fdiag)):
-    fstr = ''.join(fdiag[x])
-    rstr = fstr[::-1]
-    m = p.findall(fstr)
-    count += len(m)
-    m = p.findall(rstr)
-    count += len(m)
-
-for x in range(len(bdiag)):
-    fstr = ''.join(bdiag[x])
-    rstr = fstr[::-1]
-    m = p.findall(fstr)
-    count += len(m)
-    m = p.findall(rstr)
-    count += len(m)
+for i in range(1, rows - 1):
+    for j in range(1, cols - 1):
+        if board[i][j] == "A":
+            if {board[i - 1][j - 1], board[i + 1][j + 1]} == legs and {board[i - 1][j + 1], board[i + 1][j - 1]} == legs:
+                count += 1
 
 print(count)

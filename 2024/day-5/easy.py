@@ -5,8 +5,9 @@ filename = 'input.txt'
 updates = []
 rules = {}
 
+p = re.compile(r"(\d+)\|(\d+)")
+
 def addRule(rule):
-    p = re.compile(r"(\d+)\|(\d+)")
     m = p.match(rule)
     key = int(m.group(1))
     value = int(m.group(2))
